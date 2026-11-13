@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+case $# in
+  2) glob='*'; old=$1; new=$2 ;;
+  3) glob=$1; old=$2; new=$3 ;;
+  *)
+    echo "usage: ${0##*/} [glob] <old-regex> <new-text>" >&2
+    exit 1
+    ;;
+esac
+
+export OLD="$old" NEW="$new"
+
+rg -lu0 -g "$glob" -e "$OLD" . \
+  | xargs -0 -r perl -pi -e 's/$ENV{OLD}/$ENV{NEW}/g'
